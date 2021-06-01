@@ -3,6 +3,7 @@
 ### Obiettivo
 L'obiettivo del progetto è la gestione di una classifica tra grafi diretti pesati
 - La classifica tiene traccia dei k "migliori" grafi
+
 Il programma da realizzare riceve in ingresso
 - due paramentri, una sola volta (sulla prima riga del file, separati da uno spazio)
 - d: il numero di nodi dei grafi
@@ -20,9 +21,10 @@ descritta dalla prima riga della matrice.
 I pesi degli archi del grafo elementi sono interi nell'intervallo [0, 2
 32 – 1].
 - Esempio per d=3
-    '''
-    AggiungiGrafo
-    3,7,42
-    0,7,2
-    7,4,3
-    '''
+
+'''
+AggiungiGrafo
+3,7,42
+0,7,2
+7,4,3
+'''
