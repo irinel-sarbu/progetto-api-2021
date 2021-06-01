@@ -19,4 +19,4 @@ CumLaude:
 	mv CumLaude bin/CumLaude
 	rm -rf *.dSYM
 build: Open UpTo18 UpTo30 CumLaude
-	echo "Build complete" 
+	echo "Build complete"
