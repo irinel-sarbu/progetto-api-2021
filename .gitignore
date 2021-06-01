@@ -1,2 +1,4 @@
 source/*
 bin/*
+my_output/*
+massif.*
