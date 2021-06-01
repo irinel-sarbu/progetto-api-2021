@@ -6,6 +6,7 @@
 
 #define NEW_GRAPH "AggiungiGrafo"
 #define TOP_K "TopK"
+#define FILE_END "\n"
 #define INFINITY 4294967295
 
 // #region Debugger settings
@@ -35,13 +36,16 @@ typedef struct ListNode
 
 typedef struct List
 {
+    uint size;
+    uint capacity;
     ListNode *head;
 } List;
 
 ListNode *List_createNode(uint, uint);
-List *List_createList();
+List *List_createList(uint);
+void List_freeLast(List *);
 void List_insert(List *, uint, uint);
-void List_print(List *, uint);
+void List_print(List *);
 void List_free(List *);
 
 typedef struct DijkstraNode
@@ -67,7 +71,7 @@ void Dijkstra_heapSwap(DijkstraNode *, DijkstraNode *);
 DijkstraMinHeap *Dijkstra_buildMinHeap(uint);
 void Dijkstra_freeMinHeap(DijkstraMinHeap *);
 DijkstraNode Dijkstra_minHeapPeak(DijkstraMinHeap *);
-DijkstraNode Dijkstra_minHeapify(DijkstraMinHeap *, int);
+void Dijkstra_minHeapify(DijkstraMinHeap *, int);
 void Dijkstra_minHeapPop(DijkstraMinHeap *);
 void Dijkstra_minHeapInsert(DijkstraMinHeap *, uint, uint);
 void Dijkstra_minHeapDecPri(DijkstraMinHeap *, uint, uint);
@@ -91,14 +95,16 @@ int main()
 {
     uint d, k;
     char cmd[14];
+    char last_command[14] = {0};
     sint counter = 0;
-    List *result = List_createList();
+    
     // Inizio Parser
     if (scanf("%d %d", &d, &k))
     {
     };
     if (SHOW_MATRIX_INFO)
         printf("[INFO] Matrix size set to %d\n[INFO] k set to %d\n", d, k);
+    List *result = List_createList(k);
     bool finished = false;
 
     while (!finished)
@@ -106,13 +112,20 @@ int main()
         if (scanf("%s", cmd))
         {
         };
-        if (strcmp(cmd, TOP_K) == 0)
-        {
-            List_print(result, k);
-            List_free(result);
+        //printf("COMMAND = %s, LAST_COMMAND = %s\n",cmd,last_command);
+        if (strcmp(cmd, last_command) == 0 && strcmp(cmd,NEW_GRAPH) != 0){
             finished = true;
+            List_free(result);
+        }else{
+            strcpy(last_command,cmd);
         }
-        if (strcmp(cmd, NEW_GRAPH) == 0)
+        
+        if (strcmp(cmd, TOP_K) == 0 && !finished)
+        {
+            List_print(result);
+            printf("\n");
+        }
+        if (strcmp(cmd, NEW_GRAPH) == 0 && !finished)
         {
             sint **adj_matrix = Parser_getMatrix(d);
             if (SHOW_MATRIX_INFO)
@@ -248,7 +261,7 @@ DijkstraNode Dijkstra_minHeapPeak(DijkstraMinHeap *heap)
 {
     return heap->elements[0];
 }
-DijkstraNode Dijkstra_minHeapify(DijkstraMinHeap *heap, int i)
+void Dijkstra_minHeapify(DijkstraMinHeap *heap, int i)
 {
     int l = Heap_leftChild(i);
     int r = Heap_rightChild(i);
@@ -435,18 +448,28 @@ ListNode *List_createNode(uint id, uint cost)
     new->next = NULL;
     return new;
 }
-
-List *List_createList()
+List *List_createList(uint capacity)
 {
     List *new = malloc(sizeof(List));
     new->head = NULL;
+    new->capacity = capacity;
+    new->size = 0;
     return new;
 }
-
+void List_freeLast(List *list){
+    ListNode *curr = list->head;
+    ListNode *prev = curr;
+    while(curr->next != NULL){
+        prev = curr;
+        curr = curr->next;
+    }
+    prev->next = NULL;
+    free(curr);  
+}
 void List_insert(List *list, uint id, uint cost)
 {
     ListNode *new = List_createNode(id, cost);
-    if (list->head == NULL || list->head->cost > cost)
+    if (list->head == NULL || list->head->cost >= cost)
     {
         new->next = list->head;
         list->head = new;
@@ -459,24 +482,28 @@ void List_insert(List *list, uint id, uint cost)
             c = c->next;
         }
 
-        new->next = c->next;
-        c->next = new;
+        if(list->size == list->capacity){
+            new->next = c->next;
+            c->next = new;
+            List_freeLast(list);
+        }else{
+            new->next = c->next;
+            c->next = new;
+            list->size ++;
+        }
     }
 }
-
-void List_print(List *list, uint k)
+void List_print(List *list)
 {
     uint counter = 0;
     ListNode *tmp = list->head;
-    while (tmp != NULL && counter < k)
+    while (tmp != NULL && counter < list->capacity)
     {
         printf("%d ", tmp->id);
         tmp = tmp->next;
         counter ++;
     }
-    printf("\n");
 }
-
 void List_free(List *list){
     ListNode *curr = list->head;
     ListNode *next;
