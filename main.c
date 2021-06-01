@@ -61,15 +61,15 @@ void Parser_matrixPrint(sint **, uint);
 
 int main()
 {
-    uint matrix_size, k;
+    uint d, k;
     char cmd[14];
     sint counter = 0;
     // Inizio Parser
-    if (scanf("%d %d", &matrix_size, &k))
+    if (scanf("%d %d", &d, &k))
     {
     };
     if(SHOW_MATRIX_INFO)
-        printf("[INFO] Matrix size set to %d\n[INFO] k set to %d\n \n",matrix_size, k);
+        printf("[INFO] Matrix size set to %d\n[INFO] k set to %d\n \n",d, k);
     bool finished = false;
     while (!finished)
     {
@@ -82,11 +82,11 @@ int main()
         }
         if (strcmp(cmd, NEW_GRAPH) == 0)
         {
-            sint **adj_matrix = Parser_getMatrix(matrix_size);
+            sint **adj_matrix = Parser_getMatrix(d);
             if(SHOW_MATRIX_INFO)
                 printf("[%*d] Matrix:\n", 5, counter);
-            Parser_matrixPrint(adj_matrix, matrix_size);
-            Parser_freeMatrix(adj_matrix, matrix_size);
+            Parser_matrixPrint(adj_matrix, d);
+            Parser_freeMatrix(adj_matrix, d);
             counter++;
         }
     }
