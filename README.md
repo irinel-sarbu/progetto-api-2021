@@ -22,9 +22,9 @@ I pesi degli archi del grafo elementi sono interi nell'intervallo [0, 2
 32 – 1].
 - Esempio per d=3
 
-'''
+```
 AggiungiGrafo
 3,7,42
 0,7,2
 7,4,3
-'''
+```
