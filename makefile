@@ -25,7 +25,7 @@ final: Open.o UpTo18.o UpTo30.o CumLaude.o
 	echo "Build complete"
 
 Test.o: CreateFolders
-	gcc -O2 -g -o Test main.c
+	gcc -std=gnu11 -pipe -g -o Test newmain.c
 	mv Test bin/Test
 	rm -rf *.dSYM
 test: Test.o

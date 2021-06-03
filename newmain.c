@@ -109,10 +109,9 @@ int main()
     matrix = (sint *)malloc(d * d * sizeof(sint));
     for (int y = 0; y < d; y++)
         for (int x = 0; x < d; x++)
-            matrix[y * d + x] = 0;
+            matrix[y * x + x] = 0;
 
-    //MinHeap *minheap_solution = Heap_buildMinHeap(k+1);
-    List *list_solution = List_createList(k);
+    MinHeap *minheap_solution = Heap_buildMinHeap(k + 1);
 
     bool finished = false;
 
@@ -144,21 +143,19 @@ int main()
             }
             uint *cost = Dijkstra_queue(matrix, d);
             uint sum = Dijkstra_sumCost(cost, d);
-            //Solution_minHeapInsert(minheap_solution, id, sum);
-            List_insert(list_solution, id, sum);
+            Solution_minHeapInsert(minheap_solution, id, sum);
             Dijkstra_freeCost(cost);
             id++;
         }
 
         if (strcmp(cmd, TOP_K) == 0 && !finished)
         {
-            // Solution_printHeapSort(minheap_solution);
-            List_print(list_solution);
+            Solution_printHeapSort(minheap_solution);
+            //List_print(list_solution);
         }
     } while (finished == false);
 
-    // Heap_freeMinHeap(minheap_solution);
-    List_free(list_solution);
+    Heap_freeMinHeap(minheap_solution);
     free(matrix);
 
     return 0;
@@ -499,13 +496,9 @@ void List_print(List *list)
 {
     uint counter = 0;
     ListNode *tmp = list->head;
-    if (tmp == NULL)
-    {
-        printf("\n");
-    }
     while (tmp != NULL && counter < list->capacity)
     {
-        if (tmp->next == NULL || counter == list->capacity - 1)
+        if (tmp->next == NULL)
             printf("%d\n", tmp->id);
         else
             printf("%d ", tmp->id);
@@ -578,37 +571,43 @@ void Solution_minHeapInsert(MinHeap *heap, uint id, uint cost)
 
 void Solution_printHeapSort(MinHeap *heap)
 {
+    // while (heap->size >= 0)
+    // {
+    //     if (heap->capacity == 0){
+    //         printf("\n");
+    //         return;
+    //     }
+            
+    //     else
+    //         for (int x = 0; x < heap->capacity; x++)
+    //             if (x == heap->capacity - 1)
+    //                 printf("%d\n", heap->elements[x].id);
+    //             else
+    //                 printf("%d ", heap->elements[x].id);
+    // }
     if (heap->size == 0)
     {
         printf("\n");
         return;
-    }else{
-        for(int x = 0; x < heap->size; x++){
-            if(x == heap->size - 1){
-                printf("%d\n", heap->elements[x].id);
-            }else{
-                printf("%d ", heap->elements[x].id);
-            }
-        }
     }
-    // MinHeap *temp = Heap_buildMinHeap(heap->capacity);
-    // temp->size = heap->size;
-    // for (int x = 0; x < heap->size; x++)
-    //     temp->elements[x] = heap->elements[x];
+    MinHeap *temp = Heap_buildMinHeap(heap->capacity);
+    temp->size = heap->size;
+    for (int x = 0; x < heap->size; x++)
+        temp->elements[x] = heap->elements[x];
 
-    // if (temp->size == temp->capacity)
-    //     Solution_minHeapPop(temp);
-    // while (temp->size > 0)
-    // {
-    //     Node u = Heap_minHeapPeak(temp);
-    //     if (temp->size > 1)
-    //         printf("%d ", u.id);
-    //     else
-    //         printf("%d\n", u.id);
-    //     Solution_minHeapPop(temp);
-    // }
-    // //Dijkstra_printMinHeap(temp);
-    // Heap_freeMinHeap(temp);
+    if (temp->size == temp->capacity)
+        Solution_minHeapPop(temp);
+    while (temp->size > 0)
+    {
+        Node u = Heap_minHeapPeak(temp);
+        if (temp->size > 1)
+            printf("%d ", u.id);
+        else
+            printf("%d\n", u.id);
+        Solution_minHeapPop(temp);
+    }
+    //Dijkstra_printMinHeap(temp);
+    Heap_freeMinHeap(temp);
 }
 
 // #endregion
