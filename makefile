@@ -3,13 +3,20 @@ test: Test.o
 CreateFolders:
 	mkdir -p bin
 Test.o: CreateFolders
-	gcc -std=gnu11 -pipe -g -o Test main.c
-	mv Test bin/Test
+	gcc -std=gnu11 -pipe -g -o Test.o main.c
+	mv Test.o bin/Test.o
 	rm -rf *.dSYM
 
 final: Final.o
 	echo "Build complete"
 Final.o: CreateFolders
-	/usr/bin/gcc -DEVAL -Wall -Werror -std=gnu11 -O2 -pipe -static -s -o Final main.c -lm
-	mv Final bin/Final
+	/usr/bin/gcc -DEVAL -Wall -Werror -std=gnu11 -O2 -pipe -static -s -o Final.o main.c -lm
+	mv Final.o bin/Final.o
+	rm -rf *.dSYM
+
+cpp: Cpp.o
+	echo "Build complete"
+Cpp.o: CreateFolders
+	g++ -g -o Cpp.o main.cpp
+	mv Cpp.o bin/Cpp.o
 	rm -rf *.dSYM
