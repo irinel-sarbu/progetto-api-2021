@@ -242,7 +242,7 @@ Node heapPeak(Heap *heap)
 }
 
 /**
- * Debugger per heap
+ * Visualizza lo heap in ordine crescente
  * @param heap Heap da visualizzare
 */
 void printHeap(Heap *heap)
@@ -355,9 +355,8 @@ int main()
 {
     int d = 0;
     int k = 0;
-    if (scanf("%d %d", &d, &k))
-    {
-    };
+    if (scanf("%d %d", &d, &k)){};
+
     uInt *matrix = calloc(d * d, sizeof(uInt));
     int id = 0;
     int cmd = 0;
