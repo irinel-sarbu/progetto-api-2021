@@ -15,9 +15,9 @@ typedef struct Node
 } Node;
 
 /**
- * @param array è una lista di elementi contenuti nell'heap
- * @param capacity è la capacità massima dell'heap
- * @param size è la dimensione dell'heap in un dato istante
+ * @param array Lista di elementi contenuti nell'heap
+ * @param capacity Capacità massima dell'heap
+ * @param size Dimensione dell'heap in un dato istante
 */
 typedef struct Heap
 {
@@ -28,8 +28,8 @@ typedef struct Heap
 
 /**
  * Dato un albero binario memorizzato come un array
- * @param index è l'indice attuale nell'array
- * @return ritorna la posizione del padre
+ * @param index Indice attuale nell'array
+ * @return Posizione del padre
 */
 uInt parent(uInt index)
 {
@@ -38,8 +38,8 @@ uInt parent(uInt index)
 
 /**
  * Dato un albero binario memorizzato come un array
- * @param index è l'indice attuale nell'array
- * @return ritorna la posizione del figlio sinistro
+ * @param index Indice attuale nell'array
+ * @return Posizione del figlio sinistro
 */
 uInt left(uInt index)
 {
@@ -48,8 +48,8 @@ uInt left(uInt index)
 
 /**
  * Dato un albero binario memorizzato come un array
- * @param index è l'indice attuale nell'array
- * @return ritorna la posizione del figlio destro
+ * @param index Indice attuale nell'array
+ * @return Posizione del figlio destro
 */
 uInt right(uInt index)
 {
@@ -68,8 +68,8 @@ void swap(Node *a, Node *b)
 
 /**
  * Crea un heap vuoto
- * @param capacity capacità massima dell'heap da creare
- * @return heap appena creato
+ * @param capacity Capacità massima dell'heap da creare
+ * @return Heap appena creato
 */
 Heap *createHeap(uInt capacity)
 {
@@ -82,7 +82,7 @@ Heap *createHeap(uInt capacity)
 
 /**
  * Libera lo heap dallo stack
- * @param heap heap da liberare
+ * @param heap Heap da liberare
 */
 void freeHeap(Heap *heap)
 {
@@ -92,8 +92,8 @@ void freeHeap(Heap *heap)
 
 /**
  * Riordina l'array dello heap in modo da rispettare le regole di un min-heap
- * @param heap heap sul quale effettuare lo heapify
- * @param pos posizione dell'array in cui effettuare lo heapify ricorsivamente
+ * @param heap Heap sul quale effettuare lo heapify
+ * @param pos Posizione dell'array in cui effettuare lo heapify ricorsivamente
 */
 void minHeapify(Heap *heap, uInt pos)
 {
@@ -151,8 +151,8 @@ void heapInsertMin(Heap *heap, uInt id, uInt cost)
 
 /**
  * Riordina l'array dello heap in modo da rispettare le regole di un max-heap
- * @param heap heap sul quale effettuare lo heapify
- * @param pos posizione dell'array in cui effettuare lo heapify ricorsivamente
+ * @param heap Heap sul quale effettuare lo heapify
+ * @param pos Posizione dell'array in cui effettuare lo heapify ricorsivamente
 */
 void maxHeapify(Heap *heap, uInt pos)
 {
@@ -234,7 +234,7 @@ void heapDecreaseKey(Heap *heap, uInt id, uInt new_cost)
 
 /**
  * @param heap Heap sul quale effettuare il "peak"
- * @return "root" dello heap
+ * @return Nodo "root" dello heap
 */
 Node heapPeak(Heap *heap)
 {
