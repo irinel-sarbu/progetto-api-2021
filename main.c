@@ -1,44 +1,64 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <unistd.h>
 
 #define NEW_GRAPH 1
 #define TOP_K 2
 #define FILE_END -1
 
-typedef unsigned int my_int;
-#define INFINITY ((my_int)-1)
+typedef unsigned int uInt;
+#define INFINITY ((uInt)-1)
 
 typedef struct Node
 {
-    my_int cost;
-    my_int id;
+    uInt val;
+    uInt id;
 } Node;
 
+/**
+ * @param array è una lista di elementi contenuti nell'heap
+ * @param capacity è la capacità massima dell'heap
+ * @param size è la dimensione dell'heap in un dato istante
+*/
 typedef struct Heap
 {
-    Node *elements;
-    my_int capacity;
-    my_int size;
+    Node *array;
+    uInt capacity;
+    uInt size;
 } Heap;
 
-my_int parent(my_int index)
+/**
+ * Dato un albero binario memorizzato come un array
+ * @param index è l'indice attuale nell'array
+ * @return ritorna la posizione del padre
+*/
+uInt parent(uInt index)
 {
     return (index - 1) / 2;
 }
 
-my_int left(my_int index)
+/**
+ * Dato un albero binario memorizzato come un array
+ * @param index è l'indice attuale nell'array
+ * @return ritorna la posizione del figlio sinistro
+*/
+uInt left(uInt index)
 {
     return 2 * index + 1;
 }
 
-my_int right(my_int index)
+/**
+ * Dato un albero binario memorizzato come un array
+ * @param index è l'indice attuale nell'array
+ * @return ritorna la posizione del figlio destro
+*/
+uInt right(uInt index)
 {
     return 2 * index + 2;
 }
 
+/**
+ * La funzione scambia la posizione in memoria dei nodi
+*/
 void swap(Node *a, Node *b)
 {
     Node tmp = *a;
@@ -46,38 +66,56 @@ void swap(Node *a, Node *b)
     *b = tmp;
 }
 
-Heap *createHeap(my_int capacity)
+/**
+ * Crea un heap vuoto
+ * @param capacity capacità massima dell'heap da creare
+ * @return heap appena creato
+*/
+Heap *createHeap(uInt capacity)
 {
     Heap *newHeap = (Heap *)malloc(sizeof(Heap));
     newHeap->size = 0;
     newHeap->capacity = capacity;
-    newHeap->elements = (Node *)calloc(capacity, sizeof(Node));
+    newHeap->array = (Node *)calloc(capacity, sizeof(Node));
     return newHeap;
 }
 
+/**
+ * Libera lo heap dallo stack
+ * @param heap heap da liberare
+*/
 void freeHeap(Heap *heap)
 {
-    free(heap->elements);
+    free(heap->array);
     free(heap);
 }
 
-void minHeapify(Heap *heap, my_int n)
+/**
+ * Riordina l'array dello heap in modo da rispettare le regole di un min-heap
+ * @param heap heap sul quale effettuare lo heapify
+ * @param pos posizione dell'array in cui effettuare lo heapify ricorsivamente
+*/
+void minHeapify(Heap *heap, uInt pos)
 {
-    int l = left(n);
-    int r = right(n);
-    int posmin = n;
-    if (l < heap->size && heap->elements[l].cost < heap->elements[n].cost)
+    int l = left(pos);
+    int r = right(pos);
+    int posmin = pos;
+    if (l < heap->size && heap->array[l].val < heap->array[pos].val)
         posmin = l;
-    if (r < heap->size && heap->elements[r].cost < heap->elements[posmin].cost)
+    if (r < heap->size && heap->array[r].val < heap->array[posmin].val)
         posmin = r;
-    if (posmin != n)
+    if (posmin != pos)
     {
-        swap(&heap->elements[n], &heap->elements[posmin]);
+        swap(&heap->array[pos], &heap->array[posmin]);
         minHeapify(heap, posmin);
     }
 }
 
-void heapPopMin(Heap *heap)
+/**
+ * Rimuove dall'array l'elemento minimo e riordina l'heap in modo da rispettare le regole di un min-heap
+ * @param heap Heap dal quale eliminare l'elemento "minimo"
+*/
+void heapDeleteMin(Heap *heap)
 {
     if (heap->size <= 0)
         return;
@@ -86,47 +124,57 @@ void heapPopMin(Heap *heap)
         heap->size--;
         return;
     }
-    heap->elements[0] = heap->elements[heap->size - 1];
+    heap->array[0] = heap->array[heap->size - 1];
     heap->size--;
     minHeapify(heap, 0);
 }
 
-void heapInsertMin(Heap *heap, my_int id, my_int cost)
+/**
+ * Inserisce un elemento nello heap
+ * @param heap Heap nel quale inserire l'elemento
+ * @param id Id con il quale identificare il nuovo elemento
+ * @param cost Valore del nuovo elemento
+*/
+void heapInsertMin(Heap *heap, uInt id, uInt cost)
 {
-    if (heap->size == heap->capacity)
-    {
-        printf("OVERFLOW SIZE == CAPACITY\n");
-        return;
-    }
     heap->size++;
     int i = heap->size - 1;
-    heap->elements[i].id = id;
-    heap->elements[i].cost = cost;
+    heap->array[i].id = id;
+    heap->array[i].val = cost;
 
-    while (i > 0 && heap->elements[parent(i)].cost > heap->elements[i].cost)
+    while (i > 0 && heap->array[parent(i)].val > heap->array[i].val)
     {
-        swap(&heap->elements[i], &heap->elements[parent(i)]);
+        swap(&heap->array[i], &heap->array[parent(i)]);
         i = parent(i);
     }
 }
 
-void maxHeapify(Heap *heap, my_int n)
+/**
+ * Riordina l'array dello heap in modo da rispettare le regole di un max-heap
+ * @param heap heap sul quale effettuare lo heapify
+ * @param pos posizione dell'array in cui effettuare lo heapify ricorsivamente
+*/
+void maxHeapify(Heap *heap, uInt pos)
 {
-    int l = left(n);
-    int r = right(n);
-    int posmax = n;
-    if (l < heap->size && heap->elements[l].cost > heap->elements[n].cost)
+    int l = left(pos);
+    int r = right(pos);
+    int posmax = pos;
+    if (l < heap->size && heap->array[l].val > heap->array[pos].val)
         posmax = l;
-    if (r < heap->size && heap->elements[r].cost > heap->elements[posmax].cost)
+    if (r < heap->size && heap->array[r].val > heap->array[posmax].val)
         posmax = r;
-    if (posmax != n)
+    if (posmax != pos)
     {
-        swap(&heap->elements[n], &heap->elements[posmax]);
+        swap(&heap->array[pos], &heap->array[posmax]);
         maxHeapify(heap, posmax);
     }
 }
 
-void heapPopMax(Heap *heap)
+/**
+ * Rimuove dall'array l'elemento minimo e riordina l'heap in modo da rispettare le regole di un max-heap
+ * @param heap Heap dal quale eliminare l'elemento "massimo"
+*/
+void heapDeleteMax(Heap *heap)
 {
     if (heap->size <= 0)
         return;
@@ -135,48 +183,68 @@ void heapPopMax(Heap *heap)
         heap->size--;
         return;
     }
-    heap->elements[0] = heap->elements[heap->size - 1];
+    heap->array[0] = heap->array[heap->size - 1];
     heap->size--;
     maxHeapify(heap, 0);
 }
 
-void heapInsertMax(Heap *heap, my_int id, my_int cost)
+/**
+ * Inserisce un elemento nello heap
+ * @param heap Heap nel quale inserire l'elemento
+ * @param id Id con il quale identificare il nuovo elemento
+ * @param cost Valore del nuovo elemento
+*/
+void heapInsertMax(Heap *heap, uInt id, uInt cost)
 {
     if (heap->size == heap->capacity)
     {
-        heapPopMax(heap);
+        heapDeleteMax(heap);
     }
     heap->size++;
     int i = heap->size - 1;
-    heap->elements[i].id = id;
-    heap->elements[i].cost = cost;
+    heap->array[i].id = id;
+    heap->array[i].val = cost;
 
-    while (i > 0 && heap->elements[parent(i)].cost <= heap->elements[i].cost)
+    while (i > 0 && heap->array[parent(i)].val <= heap->array[i].val)
     {
-        swap(&heap->elements[i], &heap->elements[parent(i)]);
+        swap(&heap->array[i], &heap->array[parent(i)]);
         i = parent(i);
     }
 }
 
-void heapDecreaseKey(Heap *heap, my_int id, my_int new_cost)
+/**
+ * Aggiorna il valore di un elemento nello heap e lo riordina per rispettare le regole di un min-heap
+ * @param heap Heap sul quale effettuare l'operazione
+ * @param id Elemento sul quale effettuare l'operazione
+ * @param new_cost Nuovo valore che l'elemento deve assumere
+*/
+void heapDecreaseKey(Heap *heap, uInt id, uInt new_cost)
 {
     int i = 0;
     for (int x = 0; x < heap->size; x++)
-        if (heap->elements[x].id == id)
+        if (heap->array[x].id == id)
             i = x;
-    heap->elements[i].cost = new_cost;
-    while (i > 0 && heap->elements[parent(i)].cost > heap->elements[i].cost)
+    heap->array[i].val = new_cost;
+    while (i > 0 && heap->array[parent(i)].val > heap->array[i].val)
     {
-        swap(&heap->elements[i], &heap->elements[parent(i)]);
+        swap(&heap->array[i], &heap->array[parent(i)]);
         i = parent(i);
     }
 }
 
+/**
+ * @param heap Heap sul quale effettuare il "peak"
+ * @return "root" dello heap
+*/
 Node heapPeak(Heap *heap)
 {
-    return heap->elements[0];
+    return heap->array[0];
 }
 
+/**
+ * Debugger per heap
+ * @param heap Heap da visualizzare
+*/
 void printHeap(Heap *heap)
 {
     if (heap->size == 0)
@@ -186,22 +254,29 @@ void printHeap(Heap *heap)
     }
 
     if (heap->size == heap->capacity)
-        heapPopMax(heap);
+        heapDeleteMax(heap);
 
-    for (my_int x = 0; x < heap->size; x++)
+    for (uInt x = 0; x < heap->size; x++)
         if (x == heap->size - 1)
-            printf("%u\n", heap->elements[x].id);
+            printf("%u\n", heap->array[x].id);
         else
-            printf("%u ", heap->elements[x].id);
+            printf("%u ", heap->array[x].id);
 }
 
-my_int *dijkstraQueue(my_int *matrix, my_int d)
+/**
+ * Algoritmo di Dijkstra per trovare la distanza minima tra i nodi di un grafo
+ * @param matrix Matrice di adiacenza di un grafo
+ * @param d Dimensione della matrice di adiacenza
+ * @return Array con le distanze dal nodo 0
+ * NOTA: Se la distanza è INFINITY il nodo è irragiungibile
+*/
+uInt *dijkstraQueue(uInt *matrix, uInt d)
 {
     Heap *Q = createHeap(d);
-    my_int *costs = calloc(d, sizeof(my_int));
+    uInt *costs = calloc(d, sizeof(uInt));
     costs[0] = 0;
     heapInsertMin(Q, 0, 0);
-    for (my_int x = 1; x < d; x++)
+    for (uInt x = 1; x < d; x++)
     {
         costs[x] = INFINITY;
         heapInsertMin(Q, x, INFINITY);
@@ -210,15 +285,15 @@ my_int *dijkstraQueue(my_int *matrix, my_int d)
     while (Q->size > 0)
     {
         Node u = heapPeak(Q);
-        my_int u_id = u.id;
-        my_int u_cost = u.cost;
-        heapPopMin(Q);
-        for (my_int v = 0; v < d && u_cost != INFINITY; v++)
+        uInt u_id = u.id;
+        uInt u_cost = u.val;
+        heapDeleteMin(Q);
+        for (uInt v = 0; v < d && u_cost != INFINITY; v++)
         {
             if (u_id != v && matrix[u_id * d + v] > 0)
             {
-                my_int cost_u_v = matrix[u_id * d + v];
-                my_int total_cost = u_cost + cost_u_v;
+                uInt cost_u_v = matrix[u_id * d + v];
+                uInt total_cost = u_cost + cost_u_v;
                 if (costs[v] > total_cost)
                 {
                     costs[v] = total_cost;
@@ -231,18 +306,21 @@ my_int *dijkstraQueue(my_int *matrix, my_int d)
     return costs;
 }
 
-my_int sumCosts(my_int *costs, my_int d)
+/**
+ * @param distances Array sul quale effettuare l'operazione
+ * @param d Numero di elementi da sommare
+ * @return Somma gli elementi dell'array, da elemento array[0] a elemento array[d-1]
+*/
+uInt sumDistances(uInt *distances, uInt d)
 {
-    my_int sum = 0;
-    for (my_int x = 0; x < d; x++)
-        if (costs[x] != INFINITY)
-            sum += costs[x];
+    uInt sum = 0;
+    for (uInt x = 0; x < d; x++)
+        if (distances[x] != INFINITY)
+            sum += distances[x];
     return sum;
 }
 
-// #region parser
-
-int get_command()
+int getCommand()
 {
     int c = getchar_unlocked();
     int command = 0;
@@ -261,9 +339,9 @@ int get_command()
     return command;
 }
 
-my_int get_num()
+uInt getNum()
 {
-    my_int num = 0;
+    uInt num = 0;
     int c = getchar_unlocked();
     while (c != '\n' && c != ',')
     {
@@ -273,10 +351,6 @@ my_int get_num()
     return num;
 }
 
-// #endregion
-
-// #region MAIN
-
 int main()
 {
     int d = 0;
@@ -284,28 +358,28 @@ int main()
     if (scanf("%d %d", &d, &k))
     {
     };
-    my_int *matrix = calloc(d * d, sizeof(my_int));
+    uInt *matrix = calloc(d * d, sizeof(uInt));
     int id = 0;
     int cmd = 0;
 
     Heap *result = createHeap(k + 1);
 
-    while ((cmd = get_command()) != FILE_END)
+    while ((cmd = getCommand()) != FILE_END)
     {
         switch (cmd)
         {
         case NEW_GRAPH:
-            for (my_int y = 0; y < d; y++)
-                for (my_int x = 0; x < d; x++)
+            for (uInt y = 0; y < d; y++)
+                for (uInt x = 0; x < d; x++)
                 {
-                    my_int num = get_num();
+                    uInt num = getNum();
                     if (x != y)
                         matrix[y * d + x] = num;
                 }
-            my_int *costs = dijkstraQueue(matrix, d);
-            my_int sum = sumCosts(costs, d);
+            uInt *distances = dijkstraQueue(matrix, d);
+            uInt sum = sumDistances(distances, d);
             heapInsertMax(result, id, sum);
-            free(costs);
+            free(distances);
             id++;
             break;
         case TOP_K:
@@ -319,5 +393,3 @@ int main()
     free(matrix);
     return 0;
 }
-
-// #endregion
