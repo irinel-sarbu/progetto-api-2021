@@ -220,10 +220,15 @@ void heapInsertMax(Heap *heap, uInt id, uInt cost)
 */
 void heapDecreaseKey(Heap *heap, uInt id, uInt new_cost)
 {
-    int i = 0;
-    for (int x = 0; x < heap->size; x++)
+    uInt i = 0;
+    int found = 0;
+    for (uInt x = 0; x < heap->size && found == 0; x++)
         if (heap->array[x].id == id)
+        {
             i = x;
+            found = 1;
+        }
+
     heap->array[i].val = new_cost;
     while (i > 0 && heap->array[parent(i)].val > heap->array[i].val)
     {
@@ -355,7 +360,9 @@ int main()
 {
     int d = 0;
     int k = 0;
-    if (scanf("%d %d", &d, &k)){};
+    if (scanf("%d %d", &d, &k))
+    {
+    };
 
     uInt *matrix = calloc(d * d, sizeof(uInt));
     int id = 0;
