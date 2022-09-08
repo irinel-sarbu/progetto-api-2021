@@ -13,10 +13,3 @@ Final.o: CreateFolders
 	/usr/bin/gcc -DEVAL -Wall -Werror -std=gnu11 -O2 -pipe -static -s -o Final.o main.c -lm
 	mv Final.o bin/Final.o
 	rm -rf *.dSYM
-
-cpp: Cpp.o
-	echo "Build complete"
-Cpp.o: CreateFolders
-	g++ -g -o Cpp.o main.cpp
-	mv Cpp.o bin/Cpp.o
-	rm -rf *.dSYM
